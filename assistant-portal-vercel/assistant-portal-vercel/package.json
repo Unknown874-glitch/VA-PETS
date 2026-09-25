@@ -1,0 +1,16 @@
+{
+  "name": "assistant-portal",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Creator dashboard and client portal, hosted on Vercel with Firebase Firestore",
+  "scripts": {
+    "dev": "node --env-file=.env server.js",
+    "start": "node server.js"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.22.1",
+    "firebase-admin": "^13.10.0"
+  }
+}

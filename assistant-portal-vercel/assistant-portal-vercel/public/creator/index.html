@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Creator dashboard</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../client/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F4FA; --surface:#FFFFFF; --ink:#1B1F3A; --muted:#62678A; --line:#DDE0EE;
+  --primary:#4B3FD6; --primary-ink:#FFFFFF; --good:#138A5E; --warn:#A5610B; --bad:#C2334D;
+  --good-bg:#E3F5EC; --warn-bg:#FBEFD9; --bad-bg:#FBE4E8; --hover:#F0F0FB;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Figtree","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12142A; --surface:#1C1F3B; --ink:#ECEEFA; --muted:#A3A7C7; --line:#2F3358;
+    --primary:#8B80FF; --primary-ink:#12142A; --good:#4FD19C; --warn:#F2B35A; --bad:#FF7A90;
+    --good-bg:#173A30; --warn-bg:#3D2F17; --bad-bg:#401F2A; --hover:#24284A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12142A; --surface:#1C1F3B; --ink:#ECEEFA; --muted:#A3A7C7; --line:#2F3358;
+  --primary:#8B80FF; --primary-ink:#12142A; --good:#4FD19C; --warn:#F2B35A; --bad:#FF7A90;
+  --good-bg:#173A30; --warn-bg:#3D2F17; --bad-bg:#401F2A; --hover:#24284A;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--body)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px;border-radius:6px}
+.hidden{display:none !important}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.02em;margin:0}
+
+/* Buttons & inputs */
+.btn{text-decoration:none;color:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1.5px solid transparent;border-radius:9px;padding:9px 14px;font-weight:600;cursor:pointer;white-space:nowrap;background:none}
+.btn.btn-primary{background:var(--primary);color:var(--primary-ink)}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-ghost{border-color:var(--line);background:var(--surface)}
+.btn-ghost:hover{border-color:var(--primary)}
+.btn-danger{color:var(--bad);border-color:var(--line);background:var(--surface)}
+.btn-danger:hover{border-color:var(--bad)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+label{display:block;font-weight:600;font-size:13.5px;margin-bottom:5px}
+.field{margin-bottom:14px}
+.hint{font-size:12.5px;color:var(--muted);margin-top:4px}
+input[type=text],input[type=email],input[type=password],input[type=search],select,textarea{
+  width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:9px;background:var(--surface)}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 22%,transparent)}
+.upper{text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.inline{display:flex;gap:8px}
+.inline input{flex:1}
+.alert{border-radius:9px;padding:10px 12px;margin-bottom:14px;font-size:14px;background:var(--bad-bg);color:var(--bad)}
+
+/* Auth screen */
+.auth{min-height:100vh;display:grid;place-items:center;padding:24px}
+.auth-box{width:100%;max-width:400px}
+.auth-mark{display:flex;gap:4px;height:36px;align-items:center;margin-bottom:22px}
+.auth-mark span{width:7px;border-radius:7px;background:var(--primary)}
+.auth h1{font-size:30px;margin-bottom:6px}
+.auth p.lede{color:var(--muted);margin:0 0 24px}
+
+/* App shell */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-inner{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font:700 17px/1 var(--display)}
+.brand-bars{display:flex;gap:3px;height:20px;align-items:center}
+.brand-bars span{width:4px;border-radius:4px;background:var(--primary)}
+nav{display:flex;gap:4px;flex:1}
+nav button{border:0;background:none;padding:8px 12px;border-radius:8px;font-weight:600;color:var(--muted);cursor:pointer}
+nav button[aria-current=page]{color:var(--ink);background:var(--hover)}
+.who{font-size:13.5px;color:var(--muted);display:flex;align-items:center;gap:12px}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 20px 60px}
+
+/* Stats strip */
+.stats{display:flex;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:22px}
+.stat{flex:1 1 150px;padding:16px 20px;border-right:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat b{display:block;font:700 28px/1.1 var(--display)}
+.stat span{font-size:13px;color:var(--muted)}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.toolbar h2{font-size:22px;margin-right:auto}
+.toolbar input[type=search]{width:240px}
+.toolbar select{width:auto}
+
+/* Table */
+.table-box{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th{text-align:left;font-size:12.5px;font-weight:600;color:var(--muted);padding:11px 16px;border-bottom:1px solid var(--line)}
+td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--hover)}
+.name{font-weight:600}
+.sub{font-size:13px;color:var(--muted)}
+.model{font-family:var(--mono);font-size:13.5px}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12.5px;font-weight:600}
+.pill.active{background:var(--good-bg);color:var(--good)}
+.pill.suspended{background:var(--warn-bg);color:var(--warn)}
+.empty{padding:48px 20px;text-align:center;color:var(--muted)}
+.empty .btn{margin-top:12px}
+
+/* Activity */
+.feed{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.feed-item{display:grid;grid-template-columns:10px 1fr auto;gap:14px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--line)}
+.feed-item:last-child{border-bottom:0}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.dot.ok{background:var(--good)} .dot.fail{background:var(--bad)} .dot.change{background:var(--primary)}
+.feed-item time{font-size:13px;color:var(--muted);white-space:nowrap}
+
+/* Account */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;max-width:520px;margin-bottom:18px}
+.panel h3{font-size:18px;margin-bottom:12px}
+.link-box{display:flex;gap:8px}
+.link-box input{font-family:var(--mono);font-size:13.5px}
+
+/* Dialogs */
+dialog{border:0;border-radius:16px;padding:0;width:calc(100% - 28px);max-width:520px;background:var(--surface);color:var(--ink);box-shadow:0 30px 80px -20px rgba(20,18,60,.5)}
+dialog::backdrop{background:rgba(18,20,42,.55)}
+.dlg{padding:24px}
+.dlg h3{font-size:22px;margin-bottom:4px}
+.dlg .lede{color:var(--muted);margin:0 0 18px;font-size:14px}
+.dlg-foot{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:8px}
+.dlg-foot .spacer{flex:1}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.meta{font-size:13px;color:var(--muted);margin:-4px 0 16px}
+
+/* Credential slip (shown once after creating or resetting) */
+.slip{border:1.5px dashed var(--primary);border-radius:12px;padding:6px 16px;margin:6px 0 16px;background:color-mix(in srgb,var(--primary) 6%,var(--surface))}
+.slip div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.slip div:last-child{border-bottom:0}
+.slip dt{color:var(--muted);font-size:13.5px}
+.slip dd{margin:0;font-family:var(--mono);font-weight:600;word-break:break-all;text-align:right}
+.warn-line{font-size:13.5px;color:var(--warn);margin:0 0 16px}
+
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:9px;font-size:14px;font-weight:500;z-index:50;max-width:calc(100% - 28px)}
+
+@media (max-width:700px){
+  .toolbar input[type=search]{width:100%;order:3}
+  .grid2{grid-template-columns:1fr}
+  .stat{border-right:0;border-bottom:1px solid var(--line)}
+  .who .email{display:none}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<!-- ============ SIGN IN / FIRST-TIME SETUP ============ -->
+<section class="auth hidden" id="authView">
+  <div class="auth-box">
+    <div class="auth-mark" aria-hidden="true"><span style="height:35%"></span><span style="height:70%"></span><span style="height:100%"></span><span style="height:60%"></span><span style="height:30%"></span></div>
+    <h1 id="authTitle">Creator sign in</h1>
+    <p class="lede" id="authLede">Manage your clients and their assistants.</p>
+    <div class="alert hidden" id="authAlert" role="alert"></div>
+    <form id="authForm" novalidate>
+      <div class="field hidden" id="nameField">
+        <label for="authName">Your name</label>
+        <input id="authName" type="text" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="authEmail">Email</label>
+        <input id="authEmail" type="email" autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="authPassword">Password</label>
+        <input id="authPassword" type="password" autocomplete="current-password">
+        <div class="hint hidden" id="pwHint">At least 10 characters.</div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;padding:12px" id="authBtn" type="submit">Sign in</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<div class="hidden" id="appView">
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand"><span class="brand-bars" aria-hidden="true"><span style="height:45%"></span><span style="height:100%"></span><span style="height:65%"></span></span>Creator</div>
+      <nav aria-label="Sections">
+        <button data-tab="clients" aria-current="page">Clients</button>
+        <button data-tab="activity">Activity</button>
+        <button data-tab="account">Account</button>
+      </nav>
+      <div class="who"><span class="email" id="whoEmail"></span><button class="btn btn-ghost" id="signOutBtn" type="button">Sign out</button></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Clients -->
+    <section id="tab-clients">
+      <div class="stats" aria-label="Summary">
+        <div class="stat"><b id="stTotal">0</b><span>Clients</span></div>
+        <div class="stat"><b id="stActive">0</b><span>Active</span></div>
+        <div class="stat"><b id="stPaused">0</b><span>Paused</span></div>
+        <div class="stat"><b id="stLogins">0</b><span>Sign-ins this week</span></div>
+        <div class="stat"><b id="stFails">0</b><span>Failed sign-ins this week</span></div>
+      </div>
+
+      <div class="toolbar">
+        <h2>Clients</h2>
+        <input type="search" id="search" placeholder="Search clients" aria-label="Search clients">
+        <select id="statusFilter" aria-label="Filter by status">
+          <option value="all">All statuses</option>
+          <option value="active">Active</option>
+          <option value="suspended">Paused</option>
+        </select>
+        <a class="btn btn-ghost" href="/api/creator/export.csv" id="exportBtn">Export CSV</a>
+        <button class="btn btn-primary" id="addBtn" type="button">Add client</button>
+      </div>
+
+      <div class="table-box">
+        <table>
+          <thead><tr><th>Client</th><th>Model number</th><th>Assistant</th><th>Status</th><th>Last sign-in</th><th>Added</th></tr></thead>
+          <tbody id="clientRows"></tbody>
+        </table>
+        <div class="empty hidden" id="emptyState"></div>
+      </div>
+    </section>
+
+    <!-- Activity -->
+    <section id="tab-activity" class="hidden">
+      <div class="toolbar">
+        <h2>Activity</h2>
+        <select id="activityFilter" aria-label="Filter activity">
+          <option value="all">Everything</option>
+          <option value="login">Successful sign-ins</option>
+          <option value="failed">Failed or blocked sign-ins</option>
+          <option value="changes">Account changes</option>
+        </select>
+        <button class="btn btn-ghost" id="refreshActivity" type="button">Refresh</button>
+      </div>
+      <div class="feed" id="feed"></div>
+    </section>
+
+    <!-- Account -->
+    <section id="tab-account" class="hidden">
+      <div class="panel">
+        <h3>Client portal link</h3>
+        <p class="sub" style="margin:0 0 12px">Send this to clients along with their sign-in details.</p>
+        <div class="link-box"><input id="portalLink" type="text" readonly aria-label="Client portal link"><button class="btn btn-ghost" id="copyLink" type="button">Copy</button></div>
+      </div>
+      <div class="panel">
+        <h3>Change your password</h3>
+        <div class="alert hidden" id="pwAlert" role="alert"></div>
+        <form id="pwForm" novalidate>
+          <div class="field"><label for="pwCurrent">Current password</label><input id="pwCurrent" type="password" autocomplete="current-password"></div>
+          <div class="field"><label for="pwNext">New password</label><input id="pwNext" type="password" autocomplete="new-password"><div class="hint">At least 10 characters.</div></div>
+          <button class="btn btn-primary" type="submit">Change password</button>
+        </form>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Add / edit client -->
+<dialog id="clientDlg" aria-labelledby="clientDlgTitle">
+  <form class="dlg" id="clientForm" novalidate>
+    <h3 id="clientDlgTitle">Add client</h3>
+    <p class="meta hidden" id="clientMeta"></p>
+    <div class="alert hidden" id="clientAlert" role="alert"></div>
+    <div class="grid2">
+      <div class="field"><label for="fName">Client name</label><input id="fName" type="text" required></div>
+      <div class="field"><label for="fEmail">Email</label><input id="fEmail" type="email" required></div>
+      <div class="field"><label for="fModel">Model number</label><input id="fModel" class="upper" type="text" spellcheck="false" placeholder="VA-2048" required></div>
+      <div class="field"><label for="fAi">Assistant name</label><input id="fAi" type="text" placeholder="Caz"></div>
+    </div>
+    <div class="field" id="pwRow">
+      <label for="fPassword">Password</label>
+      <div class="inline"><input id="fPassword" type="text" spellcheck="false" autocomplete="off" placeholder="Leave blank to generate one"><button class="btn btn-ghost" type="button" id="genBtn">Generate</button></div>
+      <div class="hint">At least 8 characters. You'll see it once after saving so you can send it.</div>
+    </div>
+    <div class="field"><label for="fNotes">Notes</label><textarea id="fNotes" placeholder="Only you can see these"></textarea></div>
+    <div class="dlg-foot">
+      <button class="btn btn-danger hidden" type="button" id="deleteBtn">Delete</button>
+      <button class="btn btn-ghost hidden" type="button" id="toggleBtn">Pause access</button>
+      <button class="btn btn-ghost hidden" type="button" id="resetBtn">Reset password</button>
+      <span class="spacer"></span>
+      <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+      <button class="btn btn-primary" type="submit" id="saveBtn">Add client</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Sign-in details, shown once -->
+<dialog id="credDlg" aria-labelledby="credTitle">
+  <div class="dlg">
+    <h3 id="credTitle">Send these sign-in details</h3>
+    <p class="lede" id="credLede">Your client needs all three to sign in.</p>
+    <dl class="slip">
+      <div><dt>Model number</dt><dd id="cModel"></dd></div>
+      <div><dt>Email</dt><dd id="cEmail"></dd></div>
+      <div><dt>Password</dt><dd id="cPassword"></dd></div>
+      <div><dt>Portal</dt><dd id="cLink"></dd></div>
+    </dl>
+    <p class="warn-line">This password won't be shown again. Copy it now.</p>
+    <div class="dlg-foot">
+      <button class="btn btn-ghost" type="button" id="copyPw">Copy password</button>
+      <button class="btn btn-primary" type="button" id="copyMsg">Copy sign-in message</button>
+      <button class="btn btn-ghost" type="button" data-close>Done</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Confirm -->
+<dialog id="confirmDlg" aria-labelledby="confirmTitle">
+  <div class="dlg">
+    <h3 id="confirmTitle">Are you sure?</h3>
+    <p class="lede" id="confirmText"></p>
+    <div class="dlg-foot">
+      <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+      <button class="btn btn-primary" type="button" id="confirmOk">Confirm</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const PORTAL_URL = location.origin + "/client/";
+let clients = [], activity = [], editing = null, lastCred = null;
+
+/* ---------- API helper ---------- */
+async function api(path, opts = {}){
+  const res = await fetch(path, {
+    method: opts.method || "GET",
+    headers: opts.body ? { "Content-Type":"application/json" } : {},
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+    credentials: "same-origin"
+  });
+  let data = {};
+  try{ data = await res.json(); }catch{}
+  if(res.status === 401 && !path.includes("/login") && !path.includes("/setup")){ showAuth(false); throw new Error(data.error || "Sign in again."); }
+  if(!res.ok) throw new Error(data.error || "Something went wrong. Try again.");
+  return data;
+}
+
+function toast(msg){
+  const t=$("toast"); t.textContent=msg; t.classList.remove("hidden");
+  clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.add("hidden"),3000);
+}
+function showAlert(id,msg){ const a=$(id); a.textContent=msg; a.classList.toggle("hidden",!msg); }
+function fmtDate(iso, withTime){
+  if(!iso) return "Never";
+  const d=new Date(iso);
+  return withTime ? d.toLocaleString(undefined,{dateStyle:"medium",timeStyle:"short"}) : d.toLocaleDateString(undefined,{dateStyle:"medium"});
+}
+function ago(iso){
+  if(!iso) return "Never";
+  const s=(Date.now()-Date.parse(iso))/1000;
+  if(s<60) return "Just now";
+  if(s<3600) return Math.floor(s/60)+" min ago";
+  if(s<86400) return Math.floor(s/3600)+" h ago";
+  if(s<86400*7) return Math.floor(s/86400)+" d ago";
+  return fmtDate(iso);
+}
+async function copy(text, done){
+  try{ await navigator.clipboard.writeText(text); toast(done); }
+  catch{ toast("Couldn't copy. Select the text and copy it yourself."); }
+}
+function openDlg(d){ d.showModal(); }
+document.querySelectorAll("dialog [data-close]").forEach(b=>b.addEventListener("click",()=>b.closest("dialog").close()));
+
+/* ---------- Auth ---------- */
+let setupMode = false;
+function showAuth(setup){
+  setupMode = setup;
+  $("appView").classList.add("hidden");
+  $("authView").classList.remove("hidden");
+  $("authTitle").textContent = setup ? "Set up your creator account" : "Creator sign in";
+  $("authLede").textContent = setup ? "This is a one-time step. You'll use this account to add clients and assign their passwords." : "Manage your clients and their assistants.";
+  $("nameField").classList.toggle("hidden", !setup);
+  $("pwHint").classList.toggle("hidden", !setup);
+  $("authPassword").autocomplete = setup ? "new-password" : "current-password";
+  $("authBtn").textContent = setup ? "Create account" : "Sign in";
+  showAlert("authAlert","");
+  (setup ? $("authName") : $("authEmail")).focus();
+}
+$("authForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const btn=$("authBtn"); btn.disabled=true;
+  try{
+    const body={ email:$("authEmail").value, password:$("authPassword").value };
+    if(setupMode) body.name=$("authName").value;
+    await api(setupMode ? "/api/creator/setup" : "/api/creator/login", { method:"POST", body });
+    $("authPassword").value="";
+    await boot();
+  }catch(err){ showAlert("authAlert", err.message); }
+  finally{ btn.disabled=false; }
+});
+$("signOutBtn").addEventListener("click", async ()=>{
+  await api("/api/creator/logout",{method:"POST", body:{}}).catch(()=>{});
+  showAuth(false); toast("Signed out.");
+});
+
+/* ---------- Tabs ---------- */
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.removeAttribute("aria-current"));
+  b.setAttribute("aria-current","page");
+  ["clients","activity","account"].forEach(t=>$("tab-"+t).classList.toggle("hidden", t!==b.dataset.tab));
+  if(b.dataset.tab==="activity") loadActivity();
+}));
+
+/* ---------- Clients ---------- */
+async function loadClients(){
+  const [c, s] = await Promise.all([api("/api/creator/clients"), api("/api/creator/stats")]);
+  clients = c.clients;
+  $("stTotal").textContent=s.total; $("stActive").textContent=s.active; $("stPaused").textContent=s.suspended;
+  $("stLogins").textContent=s.signInsThisWeek; $("stFails").textContent=s.failedThisWeek;
+  renderClients();
+}
+function renderClients(){
+  const q=$("search").value.trim().toLowerCase(), st=$("statusFilter").value;
+  const list=clients.filter(c=>(st==="all"||c.status===st) &&
+    (!q || [c.clientName,c.email,c.modelNumber,c.aiName].some(v=>(v||"").toLowerCase().includes(q))));
+  const body=$("clientRows"); body.innerHTML="";
+  list.forEach(c=>{
+    const tr=document.createElement("tr"); tr.tabIndex=0;
+    tr.innerHTML=`<td><div class="name"></div><div class="sub"></div></td><td class="model"></td><td></td><td><span class="pill"></span></td><td></td><td></td>`;
+    const td=tr.children;
+    td[0].children[0].textContent=c.clientName; td[0].children[1].textContent=c.email;
+    td[1].textContent=c.modelNumber; td[2].textContent=c.aiName;
+    td[3].firstChild.textContent = c.status==="active" ? "Active" : "Paused";
+    td[3].firstChild.classList.add(c.status);
+    td[4].textContent=ago(c.lastLoginAt); td[4].title=fmtDate(c.lastLoginAt,true);
+    td[5].textContent=fmtDate(c.createdAt);
+    tr.addEventListener("click",()=>openEdit(c.id));
+    tr.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openEdit(c.id); }});
+    body.appendChild(tr);
+  });
+  const empty=$("emptyState");
+  if(!clients.length){
+    empty.innerHTML=`<div>No clients yet. Add your first one to give them access to the portal.</div><button class="btn btn-primary" type="button">Add client</button>`;
+    empty.querySelector("button").onclick=openAdd;
+    empty.classList.remove("hidden");
+  }else if(!list.length){
+    empty.textContent="No clients match your search."; empty.classList.remove("hidden");
+  }else empty.classList.add("hidden");
+}
+$("search").addEventListener("input", renderClients);
+$("statusFilter").addEventListener("change", renderClients);
+
+/* ---------- Add / edit ---------- */
+function genPassword(){
+  const chars="abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const r=crypto.getRandomValues(new Uint32Array(12)); let s="";
+  for(let i=0;i<12;i++){ s+=chars[r[i]%chars.length]; if(i===3||i===7) s+="-"; }
+  return s;
+}
+$("genBtn").addEventListener("click",()=>{ $("fPassword").value=genPassword(); });
+
+function openAdd(){
+  editing=null;
+  $("clientForm").reset();
+  $("clientDlgTitle").textContent="Add client";
+  $("saveBtn").textContent="Add client";
+  $("clientMeta").classList.add("hidden");
+  $("pwRow").classList.remove("hidden");
+  ["deleteBtn","toggleBtn","resetBtn"].forEach(id=>$(id).classList.add("hidden"));
+  showAlert("clientAlert","");
+  openDlg($("clientDlg")); $("fName").focus();
+}
+$("addBtn").addEventListener("click", openAdd);
+
+function openEdit(id){
+  const c=clients.find(x=>x.id===id); if(!c) return;
+  editing=c;
+  $("clientDlgTitle").textContent=c.clientName;
+  $("clientMeta").textContent=`Added ${fmtDate(c.createdAt)}. Password set ${fmtDate(c.passwordSetAt)}. Signed in ${c.loginCount||0} times.`;
+  $("clientMeta").classList.remove("hidden");
+  $("fName").value=c.clientName; $("fEmail").value=c.email; $("fModel").value=c.modelNumber;
+  $("fAi").value=c.aiName; $("fNotes").value=c.notes||"";
+  $("pwRow").classList.add("hidden");
+  $("saveBtn").textContent="Save changes";
+  $("toggleBtn").textContent = c.status==="active" ? "Pause access" : "Resume access";
+  ["deleteBtn","toggleBtn","resetBtn"].forEach(id=>$(id).classList.remove("hidden"));
+  showAlert("clientAlert","");
+  openDlg($("clientDlg"));
+}
+
+$("clientForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const body={ clientName:$("fName").value, email:$("fEmail").value, modelNumber:$("fModel").value, aiName:$("fAi").value, notes:$("fNotes").value };
+  const btn=$("saveBtn"); btn.disabled=true;
+  try{
+    if(editing){
+      await api(`/api/creator/clients/${editing.id}`, { method:"PATCH", body });
+      $("clientDlg").close(); toast("Changes saved.");
+    }else{
+      body.password=$("fPassword").value;
+      const r=await api("/api/creator/clients", { method:"POST", body });
+      $("clientDlg").close(); toast("Client added.");
+      showCred(r.client, r.password, false);
+    }
+    await loadClients();
+  }catch(err){ showAlert("clientAlert", err.message); }
+  finally{ btn.disabled=false; }
+});
+
+function confirmAction(title, text, okLabel, danger){
+  return new Promise(resolve=>{
+    $("confirmTitle").textContent=title; $("confirmText").textContent=text;
+    const ok=$("confirmOk"); ok.textContent=okLabel;
+    ok.className = danger ? "btn btn-danger" : "btn btn-primary";
+    const d=$("confirmDlg");
+    const done=v=>{ ok.onclick=null; d.onclose=null; if(d.open) d.close(); resolve(v); };
+    ok.onclick=()=>done(true); d.onclose=()=>resolve(false);
+    openDlg(d);
+  });
+}
+
+$("resetBtn").addEventListener("click", async ()=>{
+  const c=editing; $("clientDlg").close();
+  if(!(await confirmAction("Reset password?", `${c.clientName}'s current password will stop working right away. You'll get a new one to send them.`, "Reset password"))) return;
+  try{
+    const r=await api(`/api/creator/clients/${c.id}/reset-password`, { method:"POST", body:{} });
+    showCred(r.client, r.password, true); await loadClients();
+  }catch(err){ toast(err.message); }
+});
+$("toggleBtn").addEventListener("click", async ()=>{
+  const c=editing, pausing=c.status==="active"; $("clientDlg").close();
+  if(pausing && !(await confirmAction("Pause access?", `${c.clientName} won't be able to sign in until you resume access. Nothing is deleted.`, "Pause access"))) return;
+  try{
+    await api(`/api/creator/clients/${c.id}`, { method:"PATCH", body:{ status: pausing ? "suspended" : "active" } });
+    toast(pausing ? "Access paused." : "Access resumed."); await loadClients();
+  }catch(err){ toast(err.message); }
+});
+$("deleteBtn").addEventListener("click", async ()=>{
+  const c=editing; $("clientDlg").close();
+  if(!(await confirmAction("Delete client?", `${c.clientName} (${c.modelNumber}) will be removed and can't sign in. This can't be undone.`, "Delete client", true))) return;
+  try{ await api(`/api/creator/clients/${c.id}`, { method:"DELETE" }); toast("Client deleted."); await loadClients(); }
+  catch(err){ toast(err.message); }
+});
+
+/* ---------- Sign-in details slip ---------- */
+function showCred(client, password, isReset){
+  lastCred={ ...client, password };
+  $("credTitle").textContent = isReset ? "New password ready" : "Send these sign-in details";
+  $("credLede").textContent = `${client.clientName} needs all three to sign in.`;
+  $("cModel").textContent=client.modelNumber; $("cEmail").textContent=client.email;
+  $("cPassword").textContent=password; $("cLink").textContent=PORTAL_URL;
+  openDlg($("credDlg"));
+}
+$("copyPw").addEventListener("click",()=>copy(lastCred.password,"Password copied."));
+$("copyMsg").addEventListener("click",()=>{
+  const c=lastCred;
+  copy(`Hi ${c.clientName},\n\nYour ${c.aiName} assistant is ready. Sign in here: ${PORTAL_URL}\n\nModel number: ${c.modelNumber}\nEmail: ${c.email}\nPassword: ${c.password}\n\nAfter signing in you can download ${c.aiName} as a web app.`, "Sign-in message copied.");
+});
+
+/* ---------- Activity ---------- */
+const LABELS={
+  client_login:["ok","signed in"], client_login_failed:["fail","failed to sign in"],
+  client_login_blocked:["fail","tried to sign in while paused"],
+  client_created:["change","was added"], client_deleted:["change","was deleted"],
+  client_suspended:["change","was paused"], client_activated:["change","was resumed"],
+  client_password_reset:["change","got a new password"], creator_setup:["change","set up the creator account"]
+};
+async function loadActivity(){
+  try{ activity=(await api("/api/creator/activity?limit=300")).activity; renderActivity(); }
+  catch(err){ toast(err.message); }
+}
+function renderActivity(){
+  const f=$("activityFilter").value, feed=$("feed"); feed.innerHTML="";
+  const list=activity.filter(a=>f==="all" ||
+    (f==="login"&&a.type==="client_login") ||
+    (f==="failed"&&(a.type==="client_login_failed"||a.type==="client_login_blocked")) ||
+    (f==="changes"&&!a.type.startsWith("client_login")));
+  if(!list.length){ feed.innerHTML=`<div class="empty">Nothing here yet.</div>`; return; }
+  list.forEach(a=>{
+    const [kind,text]=LABELS[a.type]||["","did something"];
+    const known=clients.find(c=>c.email===a.email && c.modelNumber===a.model);
+    const who = known ? `${known.clientName} (${a.model})` : [a.email,a.model].filter(Boolean).join(" · ") || "Someone";
+    const row=document.createElement("div"); row.className="feed-item";
+    row.innerHTML=`<span class="dot ${kind}"></span><div></div><time></time>`;
+    row.children[1].textContent=`${who} ${text}`;
+    row.children[2].textContent=ago(a.at); row.children[2].title=fmtDate(a.at,true);
+    feed.appendChild(row);
+  });
+}
+$("activityFilter").addEventListener("change", renderActivity);
+$("refreshActivity").addEventListener("click", loadActivity);
+
+/* ---------- Account ---------- */
+$("portalLink").value=PORTAL_URL;
+$("copyLink").addEventListener("click",()=>copy(PORTAL_URL,"Link copied."));
+$("pwForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  try{
+    await api("/api/creator/change-password",{method:"POST", body:{ current:$("pwCurrent").value, next:$("pwNext").value }});
+    $("pwForm").reset(); showAlert("pwAlert",""); toast("Password changed.");
+  }catch(err){ showAlert("pwAlert", err.message); }
+});
+
+/* ---------- Start ---------- */
+async function boot(){
+  const s=await api("/api/creator/status");
+  if(s.setupNeeded) return showAuth(true);
+  if(!s.signedIn) return showAuth(false);
+  $("authView").classList.add("hidden");
+  $("appView").classList.remove("hidden");
+  $("whoEmail").textContent=s.email;
+  await loadClients();
+}
+boot().catch(err=>{ showAuth(false); showAlert("authAlert", err instanceof TypeError ? "Can't reach the server. Check your connection, then reload." : err.message); });
+</script>
+</body>
+</html>
